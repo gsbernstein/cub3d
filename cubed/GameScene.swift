@@ -11,85 +11,45 @@ import GameplayKit
 class GameScene: SKScene {
     
     var entities = [GKEntity]()
-    var graphs = [String : GKGraph]()
+    var graphs = [String: GKGraph]()
+    
+    var things = [CGPoint]()
     
     private var lastUpdateTime : TimeInterval = 0
-    private var label : SKLabelNode?
-    private var spinnyNode : SKShapeNode?
     
     override func sceneDidLoad() {
         
         self.lastUpdateTime = 0
         
-        // Get label node from scene and store it for use later
-        self.label = self.childNode(withName: "//helloLabel") as? SKLabelNode
-        if let label = self.label {
-            label.alpha = 0.0
-            label.run(SKAction.fadeIn(withDuration: 2.0))
-        }
-        
-        // Create shape node to use during mouse interaction
-        let w = (self.size.width + self.size.height) * 0.05
-        self.spinnyNode = SKShapeNode.init(rectOf: CGSize.init(width: w, height: w), cornerRadius: w * 0.3)
-        
-        if let spinnyNode = self.spinnyNode {
-            spinnyNode.lineWidth = 2.5
-            
-            spinnyNode.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat(Double.pi), duration: 1)))
-            spinnyNode.run(SKAction.sequence([SKAction.wait(forDuration: 0.5),
-                                              SKAction.fadeOut(withDuration: 0.5),
-                                              SKAction.removeFromParent()]))
-        }
-    }
-    
-    
-    func touchDown(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.green
-            self.addChild(n)
-        }
-    }
-    
-    func touchMoved(toPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.blue
-            self.addChild(n)
-        }
-    }
-    
-    func touchUp(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.red
-            self.addChild(n)
-        }
-    }
-    
-    override func mouseDown(with event: NSEvent) {
-        self.touchDown(atPoint: event.location(in: self))
-    }
-    
-    override func mouseDragged(with event: NSEvent) {
-        self.touchMoved(toPoint: event.location(in: self))
-    }
-    
-    override func mouseUp(with event: NSEvent) {
-        self.touchUp(atPoint: event.location(in: self))
-    }
-    
-    override func keyDown(with event: NSEvent) {
-        switch event.keyCode {
-        case 0x31:
-            if let label = self.label {
-                label.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
+        for node in self.children {
+            if let map = node as? SKTileMapNode {
+                setUpScene(map: map)
             }
-        default:
-            print("keyDown: \(event.characters!) keyCode: \(event.keyCode)")
         }
+        
     }
     
+    func setUpScene(map: SKTileMapNode) {
+        let tileSize = map.tileSize
+        
+        let tileGroups = map.tileSet.tileGroups
+        let grassGroup = tileGroups.first(where: { $0.name == "Grass "} )
+        let grass = grassGroup.
+        
+        let texture = SKTexture(imageNamed: <#T##String#>)
+        let grass = SKTileDefinition(texture: )
+        
+//        map.setTileGroup(<#T##tileGroup: SKTileGroup##SKTileGroup#>, andTileDefinition: <#T##SKTileDefinition#>, forColumn: <#T##Int#>, row: <#T##Int#>)
+        
+        for col in 0..<map.numberOfColumns {
+            for row in 0..<map.numberOfRows {
+                if let tileDefintion = map.tileDefinition(atColumn: col, row: row) {
+                    things.append(CGPoint(x: col, y: row))
+                }
+            }
+        }
+        
+    }
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
@@ -108,5 +68,38 @@ class GameScene: SKScene {
         }
         
         self.lastUpdateTime = currentTime
+    }
+    
+    func touchDown(atPoint pos : CGPoint) {
+        
+    }
+    
+    func touchMoved(toPoint pos : CGPoint) {
+        
+    }
+    
+    func touchUp(atPoint pos : CGPoint) {
+        
+    }
+    
+    override func mouseDown(with event: NSEvent) {
+        self.touchDown(atPoint: event.location(in: self))
+    }
+    
+    override func mouseDragged(with event: NSEvent) {
+        self.touchMoved(toPoint: event.location(in: self))
+    }
+    
+    override func mouseUp(with event: NSEvent) {
+        self.touchUp(atPoint: event.location(in: self))
+    }
+    
+    override func keyDown(with event: NSEvent) {
+        switch event.keyCode {
+        case 0x31:
+            () // spacebar
+        default:
+            print("keyDown: \(event.characters!) keyCode: \(event.keyCode)")
+        }
     }
 }
